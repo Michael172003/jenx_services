@@ -13,7 +13,7 @@ app.secret_key = 'votre_cle_secrete_tres_securisee_ici'
 
 # Chemins pour le stockage des données et des uploads
 # Correction pour le déploiement : utiliser des chemins absolus
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+BASE_DIR = os.getcwd()
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
 DATA_FOLDER = os.path.join(BASE_DIR, 'data')
 RECEIPTS_FOLDER = os.path.join(BASE_DIR, 'receipts')

@@ -1,19 +1,19 @@
 # app.py
-from flask import Flask, render_template, request, redirect, url_for, jsonify, session
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session, send_from_directory
 import os
 import json
 import uuid
 import datetime
 import requests
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 # Une clé secrète est nécessaire pour les sessions Flask.
 # En production, utilisez une chaîne aléatoire et complexe.
 app.secret_key = 'votre_cle_secrete_tres_securisee_ici'
 
 # Chemins pour le stockage des données et des uploads
-# Correction pour le déploiement : utiliser des chemins absolus
-BASE_DIR = os.getcwd()
+# Utilise app.root_path qui est le chemin absolu du répertoire de l'application Flask
+BASE_DIR = app.root_path
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
 DATA_FOLDER = os.path.join(BASE_DIR, 'data')
 RECEIPTS_FOLDER = os.path.join(BASE_DIR, 'receipts')

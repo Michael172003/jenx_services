@@ -519,10 +519,10 @@ def uploaded_file(filename):
 def admin_login():
     """Page de connexion de l'admin."""
     if request.method == 'POST':
-        username = request.form.get('michael')
-        password = request.form.get('michael')
+        username = request.form.get('username')
+        password = request.form.get('password')
         # Simple vérification pour l'exemple. En production, utilisez des identifiants sécurisés.
-        if username == 'admin' and password == 'adminpass': 
+        if username == 'michael' and password == 'michael': 
             session['admin_logged_in'] = True
             return redirect(url_for('admin_dashboard'))
         else:

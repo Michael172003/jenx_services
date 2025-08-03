@@ -1,0 +1,48 @@
+<!-- templates/payment_choice.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JenX Services - Choix du paiement</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Choisissez votre mode de paiement</h2>
+        <p class="text-center text-gray-600 mb-6">Votre devise sélectionnée : <span class="font-semibold text-blue-600">{{ currency }}</span></p>
+        <form action="/submit_payment_method" method="POST" class="space-y-6">
+            <div class="border border-gray-300 rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition duration-200 ease-in-out">
+                <label class="flex items-center space-x-3">
+                    <input type="radio" name="payment_method" value="card" class="form-radio h-5 w-5 text-blue-600" required>
+                    <span class="text-lg font-medium text-gray-800">Carte prépayée/cadeau</span>
+                </label>
+                <p class="text-sm text-gray-500 mt-1 ml-8">PCS, Transcash, Steam, iTunes, Neosurf...</p>
+            </div>
+            <div class="border border-gray-300 rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition duration-200 ease-in-out">
+                <label class="flex items-center space-x-3">
+                    <input type="radio" name="payment_method" value="ticket" class="form-radio h-5 w-5 text-blue-600" required>
+                    <span class="text-lg font-medium text-gray-800">Ticket physique</span>
+                </label>
+                <p class="text-sm text-gray-500 mt-1 ml-8">Ticket de caisse, reçu physique...</p>
+            </div>
+            <div>
+                <button type="submit"
+                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+                    Continuer
+                </button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+
+
+

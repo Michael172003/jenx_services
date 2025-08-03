@@ -1,0 +1,66 @@
+<!-- templates/crypto_payment.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JenX Services - Paiement Crypto (TON)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md text-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Paiement en Crypto (TON)</h2>
+        <p class="text-gray-600 mb-6">Veuillez envoyer <span class="font-bold text-blue-600">25 USD en TON</span> à l'adresse ci-dessous.</p>
+        
+        <div class="bg-gray-100 p-4 rounded-lg mb-6 break-words">
+            <p class="text-sm font-semibold text-gray-700 mb-2">Adresse TON :</p>
+            <p id="tonAddress" class="text-blue-700 font-mono text-base sm:text-lg select-all">UQCsdvFkrlE02sEKEoVlg-MgFVEnLXlkBI0xGom25ax3hqCI</p>
+            <button onclick="copyToClipboard()" class="mt-3 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-150 ease-in-out">
+                Copier l'adresse
+            </button>
+        </div>
+
+        <form action="/submit_crypto_payment" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <div>
+                <label for="crypto_proof" class="block text-sm font-medium text-gray-700 text-left mb-2">Capture d'écran de la preuve de paiement</label>
+                <input type="file" id="crypto_proof" name="crypto_proof" accept="image/*" required
+                       class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+            </div>
+            <div>
+                <button type="submit"
+                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out">
+                    Soumettre la preuve de paiement
+                </button>
+            </div>
+        </form>
+        <p class="text-sm text-gray-500 mt-4">Votre paiement sera vérifié après la soumission de la preuve.</p>
+    </div>
+
+    <script>
+        function copyToClipboard() {
+            const tonAddress = document.getElementById('tonAddress').textContent;
+            // Utilisation de document.execCommand pour la compatibilité avec les iframes
+            const textarea = document.createElement('textarea');
+            textarea.value = tonAddress;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                alert('Adresse TON copiée dans le presse-papiers !'); // Utiliser un modal personnalisé en production
+            } catch (err) {
+                console.error('Impossible de copier le texte: ', err);
+                alert('Échec de la copie de l\'adresse TON.'); // Utiliser un modal personnalisé en production
+            }
+            document.body.removeChild(textarea);
+        }
+    </script>
+</body>
+</html>
+

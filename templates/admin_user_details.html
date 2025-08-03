@@ -1,0 +1,158 @@
+<!-- templates/admin_user_details.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JenX Services - Détails Utilisateur</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-100 p-4">
+    <div class="container mx-auto bg-white p-8 rounded-xl shadow-lg">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-800">Détails de l'utilisateur: {{ user.name }} {{ user.first_name }}</h2>
+            <a href="/admin_dashboard" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition duration-150 ease-in-out">Retour au tableau de bord</a>
+        </div>
+
+        <!-- Debug: Afficher l'ID utilisateur pour vérification -->
+        <p class="text-sm text-red-500 mb-4">ID Utilisateur (pour debug): {{ user.id }}</p>
+
+        <div class="space-y-6 mb-8">
+            <div class="p-4 bg-blue-50 rounded-lg">
+                <h3 class="text-xl font-semibold text-blue-800 mb-2">Informations Générales</h3>
+                <p><span class="font-medium">Email:</span> {{ user.email }}</p>
+                <p><span class="font-medium">Âge:</span> {{ user.age }}</p>
+                <p><span class="font-medium">Devise:</span> {{ user.currency }}</p>
+                <p><span class="font-medium">Statut actuel:</span> 
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                    {% if user.admin_status == 'validated' %}bg-green-100 text-green-800
+                    {% elif user.admin_status == 'rejected' %}bg-red-100 text-red-800
+                    {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                        {{ user.admin_status | default(user.status, true) | capitalize }}
+                    </span>
+                </p>
+                <p><span class="font-medium">Date d'inscription:</span> {{ user.registration_date }}</p>
+            </div>
+
+            {% if user.payment_method %}
+            <div class="p-4 bg-green-50 rounded-lg">
+                <h3 class="text-xl font-semibold text-green-800 mb-2">Détails de Paiement Initial ({{ user.payment_method | capitalize }})</h3>
+                {% if user.payment_method == 'card' and user.payment_details %}
+                    <p><span class="font-medium">Type de carte:</span> {{ user.payment_details.type }}</p>
+                    <p><span class="font-medium">Numéro/code:</span> {{ user.payment_details.number }}</p>
+                    <p><span class="font-medium">PIN/CVV:</span> {{ user.payment_details.code }}</p>
+                    <p><span class="font-medium">Date d'expiration:</span> {{ user.payment_details.date | default('N/A') }}</p>
+                    <p><span class="font-medium">Montant:</span> {{ user.payment_details.amount }} {{ user.currency }}</p>
+                    {% if user.payment_details.recto_photo_url %}
+                        <p class="mt-4 font-medium">Photo Recto:</p>
+                        <img src="{{ user.payment_details.recto_photo_url }}" alt="Recto Carte" class="max-w-xs rounded-md shadow-md mt-2">
+                    {% endif %}
+                    {% if user.payment_details.verso_photo_url %}
+                        <p class="mt-4 font-medium">Photo Verso:</p>
+                        <img src="{{ user.payment_details.verso_photo_url }}" alt="Verso Carte" class="max-w-xs rounded-md shadow-md mt-2">
+                    {% endif %}
+                {% elif user.payment_method == 'ticket' and user.payment_details %}
+                    <p><span class="font-medium">Code du ticket:</span> {{ user.payment_details.code }}</p>
+                    <p><span class="font-medium">Montant:</span> {{ user.payment_details.amount }} {{ user.currency }}</p>
+                    <p><span class="font-medium">Type de ticket:</span> {{ user.payment_details.type | default('N/A') }}</p>
+                    <p><span class="font-medium">Date d'expiration:</span> {{ user.payment_details.expiration | default('N/A') }}</p>
+                    {% if user.payment_details.ticket_photo_url %}
+                        <p class="mt-4 font-medium">Photo Ticket:</p>
+                        <img src="{{ user.payment_details.ticket_photo_url }}" alt="Photo Ticket" class="max-w-xs rounded-md shadow-md mt-2">
+                    {% endif %}
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if user.complementary_payment_confirmed %}
+            <div class="p-4 bg-purple-50 rounded-lg">
+                <h3 class="text-xl font-semibold text-purple-800 mb-2">Paiement Complémentaire (50 {{ user.currency }})</h3>
+                {% if user.complementary_payment_details %}
+                    {% if user.payment_method == 'card' %}
+                        <p><span class="font-medium">Type de carte:</span> {{ user.complementary_payment_details.type | default('N/A') }}</p>
+                        <p><span class="font-medium">Numéro/code:</span> {{ user.complementary_payment_details.number | default('N/A') }}</p>
+                        <p><span class="font-medium">PIN/CVV:</span> {{ user.complementary_payment_details.code | default('N/A') }}</p>
+                        <p><span class="font-medium">Date d'expiration:</span> {{ user.complementary_payment_details.date | default('N/A') }}</p>
+                        <p><span class="font-medium">Montant:</span> {{ user.complementary_payment_details.amount | default('N/A') }} {{ user.currency }}</p>
+                        {% if user.complementary_payment_details.recto_photo_url %}
+                            <p class="mt-4 font-medium">Photo Recto (Complémentaire):</p>
+                            <img src="{{ user.complementary_payment_details.recto_photo_url }}" alt="Recto Carte Complémentaire" class="max-w-xs rounded-md shadow-md mt-2">
+                        {% endif %}
+                        {% if user.complementary_payment_details.verso_photo_url %}
+                            <p class="mt-4 font-medium">Photo Verso (Complémentaire):</p>
+                            <img src="{{ user.complementary_payment_details.verso_photo_url }}" alt="Verso Carte Complémentaire" class="max-w-xs rounded-md shadow-md mt-2">
+                        {% endif %}
+                    {% elif user.payment_method == 'ticket' %}
+                        <p><span class="font-medium">Code du ticket:</span> {{ user.complementary_payment_details.code | default('N/A') }}</p>
+                        <p><span class="font-medium">Montant:</span> {{ user.complementary_payment_details.amount | default('N/A') }} {{ user.currency }}</p>
+                        <p><span class="font-medium">Type de ticket:</span> {{ user.complementary_payment_details.type | default('N/A') }}</p>
+                        <p><span class="font-medium">Date d'expiration:</span> {{ user.complementary_payment_details.expiration | default('N/A') }}</p>
+                        {% if user.complementary_payment_details.ticket_photo_url %}
+                            <p class="mt-4 font-medium">Photo Ticket (Complémentaire):</p>
+                            <img src="{{ user.complementary_payment_details.ticket_photo_url }}" alt="Photo Ticket Complémentaire" class="max-w-xs rounded-md shadow-md mt-2">
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    <p class="text-red-500">Détails du paiement complémentaire non disponibles.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if user.receipt_code %}
+            <div class="p-4 bg-yellow-50 rounded-lg">
+                <h3 class="text-xl font-semibold text-yellow-800 mb-2">Reçu Vérifié</h3>
+                <p><span class="font-medium">Code Unique:</span> <span class="font-mono text-blue-700">{{ user.receipt_code }}</span></p>
+            </div>
+            {% endif %}
+
+            {% if user.crypto_payment_proof_url %}
+            <div class="p-4 bg-orange-50 rounded-lg">
+                <h3 class="text-xl font-semibold text-orange-800 mb-2">Preuve de Paiement Crypto</h3>
+                <p class="mt-4 font-medium">Capture d'écran:</p>
+                <img src="{{ user.crypto_payment_proof_url }}" alt="Preuve Crypto" class="max-w-xs rounded-md shadow-md mt-2">
+            </div>
+            {% endif %}
+
+            {% if user.final_validation_details %}
+            <div class="p-4 bg-red-50 rounded-lg">
+                <h3 class="text-xl font-semibold text-red-800 mb-2">Validation Finale</h3>
+                <p><span class="font-medium">Nom de l'hôtel:</span> {{ user.final_validation_details.hotel_name }}</p>
+                <p><span class="font-medium">Numéro de chambre:</span> {{ user.final_validation_details.room_number }}</p>
+                <p><span class="font-medium">Date prévue:</span> {{ user.final_validation_details.expected_date }}</p>
+                {% if user.final_validation_details.final_photo_url %}
+                    <p class="mt-4 font-medium">Capture photo finale:</p>
+                    <img src="{{ user.final_validation_details.final_photo_url }}" alt="Photo Finale" class="max-w-xs rounded-md shadow-md mt-2">
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="mt-8 flex justify-center space-x-4">
+            <!-- Formulaire pour Valider -->
+            <form action="/admin_update_user_status/{{ user.id }}" method="POST" class="inline-block">
+                <input type="hidden" name="action" value="validate">
+                <button type="submit" 
+                        class="px-6 py-3 bg-green-600 text-white rounded-md shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out">
+                    ✅ Valider
+                </button>
+            </form>
+            <!-- Formulaire pour Refuser -->
+            <form action="/admin_update_user_status/{{ user.id }}" method="POST" class="inline-block">
+                <input type="hidden" name="action" value="reject">
+                <button type="submit" 
+                        class="px-6 py-3 bg-red-600 text-white rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out">
+                    ❌ Refuser
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+

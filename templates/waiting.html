@@ -1,0 +1,57 @@
+<!-- templates/waiting.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JenX Services - Vérification en cours</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md text-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Vérification en cours...</h2>
+        <p class="text-gray-600 mb-6">Veuillez patienter pendant que nous vérifions vos informations.</p>
+        <div class="flex justify-center items-center mb-6">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+        </div>
+        <p class="text-xl font-semibold text-gray-700 mb-4">Temps restant : <span id="countdown" class="text-blue-600">10:00</span></p>
+        <p class="text-sm text-gray-500">Vous serez automatiquement redirigé après la vérification.</p>
+    </div>
+
+    <script>
+        // Fonction de compte à rebours
+        function startCountdown(duration, display) {
+            let timer = duration, minutes, seconds;
+            const interval = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(interval);
+                    // Rediriger vers la prochaine étape après le compte à rebours
+                    window.location.href = "{{ url_for('complementary_payment') }}";
+                }
+            }, 1000);
+        }
+
+        window.onload = function () {
+            const tenMinutes = 60 * 10; // 10 minutes en secondes
+            const display = document.querySelector('#countdown');
+            startCountdown(tenMinutes, display);
+        };
+    </script>
+</body>
+</html>
+

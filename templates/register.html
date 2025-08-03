@@ -1,0 +1,122 @@
+<!-- templates/register.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JenX Services - Inscription</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Arrière-plan gauche - Motif abstrait ou professionnel */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 35%; /* Augmenté légèrement pour plus de présence */
+            height: 100%;
+            background-image: url('https://placehold.co/600x900/D1E7DD/28A745?text=Confidential%0AService'); /* Vert doux, thème sécurité/confiance */
+            background-size: cover;
+            background-position: center;
+            opacity: 0.5; /* Plus doux */
+            z-index: 0;
+            filter: brightness(105%); /* Légèrement plus lumineux */
+        }
+
+        /* Arrière-plan droit - Motif abstrait ou professionnel */
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 35%; /* Augmenté légèrement pour plus de présence */
+            height: 100%;
+            background-image: url('https://placehold.co/600x900/C8E6C9/388E3C?text=Secure%0APayments'); /* Vert plus profond, thème sécurité/confiance */
+            background-size: cover;
+            background-position: center;
+            opacity: 0.5; /* Plus doux */
+            z-index: 0;
+            filter: brightness(105%);
+        }
+
+        /* Le conteneur du formulaire doit être au-dessus des arrière-plans */
+        .form-container {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Media queries pour la responsivité */
+        @media (max-width: 768px) {
+            body::before,
+            body::after {
+                width: 0; /* Cache les images sur les petits écrans */
+            }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+    <!-- Photo de profil en haut à droite -->
+    <div class="absolute top-4 right-4 z-20">
+        <!-- Remplacé la taille w-16 h-16 par w-24 h-24 pour une taille plus grande -->
+        <img src="{{ url_for('static', filename='profile.png') }}" 
+             alt="Photo de profil" 
+             class="w-24 h-24 rounded-full object-cover border-2 border-white shadow-lg">
+    </div>
+
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md form-container border border-gray-200">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Inscription JenX Services</h2>
+        <!-- Modifié l'espacement vertical de space-y-6 à space-y-4 pour rendre le formulaire plus compact -->
+        <form action="/register" method="POST" class="space-y-4">
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+                <input type="text" id="name" name="name" required
+                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm transition duration-150 ease-in-out">
+            </div>
+            <div>
+                <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
+                <input type="text" id="first_name" name="first_name" required
+                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm transition duration-150 ease-in-out">
+            </div>
+            <div>
+                <label for="age" class="block text-sm font-medium text-gray-700 mb-1">Âge</label>
+                <input type="number" id="age" name="age" required min="18"
+                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm transition duration-150 ease-in-out">
+            </div>
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input type="email" id="email" name="email" required
+                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm transition duration-150 ease-in-out">
+            </div>
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+                <input type="password" id="password" name="password" required
+                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm transition duration-150 ease-in-out">
+            </div>
+            <div>
+                <label for="currency" class="block text-sm font-medium text-gray-700 mb-1">Devise</label>
+                <select id="currency" name="currency" required
+                        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm transition duration-150 ease-in-out">
+                    <option value="€">Euro (€)</option>
+                    <option value="$">Dollar ($)</option>
+                    <option value="CHF">Franc Suisse (CHF)</option>
+                </select>
+            </div>
+            <div>
+                <button type="submit"
+                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-lg font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out transform hover:scale-105">
+                    S'inscrire
+                </button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+

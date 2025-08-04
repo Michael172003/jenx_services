@@ -12,7 +12,6 @@ app = Flask(__name__, static_url_path='/static')
 app.secret_key = 'votre_cle_secrete_tres_securisee_ici'
 
 # Chemins pour le stockage des données et des uploads
-# Utilise app.root_path qui est le chemin absolu du répertoire de l'application Flask
 BASE_DIR = app.root_path
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
 DATA_FOLDER = os.path.join(BASE_DIR, 'data')
@@ -27,16 +26,17 @@ os.makedirs(RECEIPTS_FOLDER, exist_ok=True)
 # Chemin du fichier JSON pour les utilisateurs
 USERS_FILE = os.path.join(DATA_FOLDER, 'users.json')
 
-# Clé API Gemini (laissez vide, elle sera fournie par l'environnement Canvas)
-GEMINI_API_KEY = ""
-GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
-
 def load_users():
     """Charge les données des utilisateurs depuis le fichier JSON."""
     if not os.path.exists(USERS_FILE) or os.stat(USERS_FILE).st_size == 0:
+        # Renvoie un dictionnaire vide si le fichier n'existe pas ou est vide
         return {}
     with open(USERS_FILE, 'r', encoding='utf-8') as f:
-        return json.load(f)
+        try:
+            return json.load(f)
+        except json.JSONDecodeError:
+            # Gère les cas où le fichier JSON est corrompu
+            return {}
 
 def save_users(users_data):
     """Sauvegarde les données des utilisateurs dans le fichier JSON."""

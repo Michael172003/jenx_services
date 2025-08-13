@@ -1,0 +1,90 @@
+<!-- templates/service_selection.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JenX Services - Sélection du Service</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        /* Style pour les options de radio sélectionnées */
+        input[type="radio"]:checked + div {
+            border-color: #2563EB; /* Couleur de bordure pour l'option sélectionnée */
+            background-color: #E0E7FF; /* Couleur de fond pour l'option sélectionnée */
+            transform: scale(1.05); /* Léger effet de zoom */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Sélectionnez votre service</h2>
+        
+        <form action="/submit_service_selection" method="POST" class="space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Option 1h / 50 -->
+                <label class="block cursor-pointer transition-all duration-200 ease-in-out">
+                    <input type="radio" name="service" value="1h_50" class="hidden peer" required>
+                    <div class="bg-gray-100 p-6 rounded-lg text-center border-2 border-transparent hover:border-gray-400 transition duration-200">
+                        <p class="text-3xl font-bold text-gray-800">1h</p>
+                        <p class="text-xl text-gray-600 mt-2">pour 50</p>
+                    </div>
+                </label>
+                <!-- Option 2h / 100 -->
+                <label class="block cursor-pointer transition-all duration-200 ease-in-out">
+                    <input type="radio" name="service" value="2h_100" class="hidden peer">
+                    <div class="bg-gray-100 p-6 rounded-lg text-center border-2 border-transparent hover:border-gray-400 transition duration-200">
+                        <p class="text-3xl font-bold text-gray-800">2h</p>
+                        <p class="text-xl text-gray-600 mt-2">pour 100</p>
+                    </div>
+                </label>
+                <!-- Option 3h / 150 -->
+                <label class="block cursor-pointer transition-all duration-200 ease-in-out">
+                    <input type="radio" name="service" value="3h_150" class="hidden peer">
+                    <div class="bg-gray-100 p-6 rounded-lg text-center border-2 border-transparent hover:border-gray-400 transition duration-200">
+                        <p class="text-3xl font-bold text-gray-800">3h</p>
+                        <p class="text-xl text-gray-600 mt-2">pour 150</p>
+                    </div>
+                </label>
+                <!-- Option 4h / 200 -->
+                <label class="block cursor-pointer transition-all duration-200 ease-in-out">
+                    <input type="radio" name="service" value="4h_200" class="hidden peer">
+                    <div class="bg-gray-100 p-6 rounded-lg text-center border-2 border-transparent hover:border-gray-400 transition duration-200">
+                        <p class="text-3xl font-bold text-gray-800">4h</p>
+                        <p class="text-xl text-gray-600 mt-2">pour 200</p>
+                    </div>
+                </label>
+                <!-- Option 12h / 600 -->
+                <label class="block cursor-pointer transition-all duration-200 ease-in-out">
+                    <input type="radio" name="service" value="12h_600" class="hidden peer">
+                    <div class="bg-gray-100 p-6 rounded-lg text-center border-2 border-transparent hover:border-gray-400 transition duration-200">
+                        <p class="text-3xl font-bold text-gray-800">12h</p>
+                        <p class="text-xl text-gray-600 mt-2">pour 600</p>
+                    </div>
+                </label>
+                <!-- Option 24h / 1200 -->
+                <label class="block cursor-pointer transition-all duration-200 ease-in-out">
+                    <input type="radio" name="service" value="24h_1200" class="hidden peer">
+                    <div class="bg-gray-100 p-6 rounded-lg text-center border-2 border-transparent hover:border-gray-400 transition duration-200">
+                        <p class="text-3xl font-bold text-gray-800">24h</p>
+                        <p class="text-xl text-gray-600 mt-2">pour 1200</p>
+                    </div>
+                </label>
+            </div>
+            
+            <div class="mt-8">
+                <button type="submit"
+                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+                    Continuer
+                </button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+

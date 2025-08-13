@@ -1,1 +1,26 @@
-{}
+{
+    "76d2d9a5-3fc8-4b06-a1a6-b9f690cc2bfc": {
+        "name": "kkk",
+        "first_name": "iii",
+        "age": "18",
+        "email": "michael@gmail.com",
+        "password": "michael",
+        "currency": "\u20ac",
+        "status": "registered",
+        "admin_status": "pending",
+        "registration_date": "2025-08-13T01:46:57.351335"
+    },
+    "14e2a74b-14a0-4cac-9093-ef3bb87a2a13": {
+        "name": "kkk",
+        "first_name": "iii",
+        "age": "20",
+        "email": "michaelr@gmail.com",
+        "password": "michael",
+        "currency": "$",
+        "status": "registered",
+        "admin_status": "pending",
+        "registration_date": "2025-08-13T01:49:49.660833",
+        "selected_service": "2h_100",
+        "payment_method": "ticket"
+    }
+}

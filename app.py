@@ -12,6 +12,7 @@ app = Flask(__name__, static_url_path='/static')
 app.secret_key = 'votre_cle_secrete_tres_securisee_ici'
 
 # Chemins pour le stockage des données et des uploads
+# Utilise app.root_path qui est le chemin absolu du répertoire de l'application Flask
 BASE_DIR = app.root_path
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
 DATA_FOLDER = os.path.join(BASE_DIR, 'data')
@@ -25,6 +26,10 @@ os.makedirs(RECEIPTS_FOLDER, exist_ok=True)
 
 # Chemin du fichier JSON pour les utilisateurs
 USERS_FILE = os.path.join(DATA_FOLDER, 'users.json')
+
+# Clé API Gemini (laissez vide, elle sera fournie par l'environnement Canvas)
+GEMINI_API_KEY = ""
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 
 def load_users():
     """Charge les données des utilisateurs depuis le fichier JSON."""
@@ -104,12 +109,31 @@ def register():
     send_email_notification(admin_email, 
                             "Nouvelle inscription JenX Services",
                             f"Un nouvel utilisateur s'est inscrit: {email} ({name} {first_name})")
-    # Si vous avez un chat_id Telegram pour l'admin
-    # admin_telegram_chat_id = "YOUR_TELEGRAM_CHAT_ID"
-    # send_telegram_notification(admin_telegram_chat_id, 
-    #                            f"Nouvelle inscription: {email} ({name} {first_name})")
 
-    # Redirige vers la page de choix du mode de paiement
+    # Redirige vers la nouvelle page de sélection du service
+    return redirect(url_for('service_selection'))
+
+@app.route('/service_selection')
+def service_selection():
+    """Nouvelle page pour la sélection du service."""
+    if 'user_id' not in session:
+        return redirect(url_for('index'))
+    return render_template('service_selection.html')
+
+@app.route('/submit_service_selection', methods=['POST'])
+def submit_service_selection():
+    """Gère la soumission du service choisi."""
+    if 'user_id' not in session:
+        return redirect(url_for('index'))
+    
+    user_id = session['user_id']
+    selected_service = request.form['service']
+    users = load_users()
+
+    if user_id in users:
+        users[user_id]['selected_service'] = selected_service
+        save_users(users)
+        
     return redirect(url_for('payment_choice'))
 
 @app.route('/payment_choice')
